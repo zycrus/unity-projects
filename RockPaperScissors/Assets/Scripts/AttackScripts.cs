@@ -9,4 +9,9 @@ public class AttackScripts : MonoBehaviour
         player.GetComponent<PlayerMovement>().isAttacking = false;
         this.gameObject.SetActive(false);
     }
+
+    private void Update()
+    {
+        
+    }
 }

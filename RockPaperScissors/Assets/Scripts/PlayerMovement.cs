@@ -14,21 +14,27 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private GameObject offset;
     Transform offsetTransform;
-    [SerializeField] private GameObject attackObject;
-    [SerializeField] private Animator attackAnim;
+    [SerializeField] private GameObject[] attackObject;
+    [SerializeField] private Animator[] attackAnim;
     private int direction = 1;
+
+    public AttackSelect attackSelect;
+    private int selected;
 
     // Start is called before the first frame update
     void Start()
     {
         body = GetComponent<Rigidbody>();
         offsetTransform = offset.transform;
-        attackAnim = attackObject.GetComponent<Animator>();
+        attackAnim[0] = attackObject[0].GetComponent<Animator>();
+        attackAnim[1] = attackObject[1].GetComponent<Animator>();
+        attackAnim[2] = attackObject[2].GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        selected = attackSelect.selectPos;
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             direction = -1;
@@ -39,8 +45,8 @@ public class PlayerMovement : MonoBehaviour
         }
         
         body.velocity = new Vector3(speed * Input.GetAxis("Horizontal"), body.velocity.y, 0);
-        offsetTransform.position = new Vector3(transform.position.x + attackObject.transform.localScale.x * direction, transform.position.y, transform.position.z);
-        attackObject.transform.position = offsetTransform.position;
+        offsetTransform.position = new Vector3(transform.position.x + (attackObject[selected].transform.localScale.x) * direction, transform.position.y, transform.position.z);
+        attackObject[selected].transform.position = offsetTransform.position;
 
         if (isGrounded)
         {
@@ -60,8 +66,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Attack()
     {
-        attackObject.SetActive(true);
-        attackAnim.SetTrigger("Attack");
+        attackObject[selected].SetActive(true);
+        attackAnim[selected].SetTrigger("Attack");
     }
 
     private void Jump()
