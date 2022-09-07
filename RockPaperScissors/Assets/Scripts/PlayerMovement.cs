@@ -1,85 +1,59 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Rigidbody body;
-
     [SerializeField] private float speed;
     [SerializeField] private float jumpHeight;
-    private bool isGrounded = false;
+    private float hSpeed = 0.0f;
+    private float vSpeed = 0.0f;
 
-    public bool isAttacking = false;
+    [Header("Collision")]
+    [SerializeField] private LayerMask layerMask;
+    private Rigidbody body;
+    private BoxCollider boxCollider;
+    [SerializeField] private bool isGrounded = false;
 
-    [SerializeField] private GameObject offset;
-    Transform offsetTransform;
-    [SerializeField] private GameObject[] attackObject;
-    [SerializeField] private Animator[] attackAnim;
-    private int direction = 1;
-
-    public AttackSelect attackSelect;
-    private int selected;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         body = GetComponent<Rigidbody>();
-        offsetTransform = offset.transform;
-        attackAnim[0] = attackObject[0].GetComponent<Animator>();
-        attackAnim[1] = attackObject[1].GetComponent<Animator>();
-        attackAnim[2] = attackObject[2].GetComponent<Animator>();
+        boxCollider = GetComponent<BoxCollider>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        selected = attackSelect.selectPos;
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            direction = -1;
-        }
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            direction = 1;
-        }
-        
-        body.velocity = new Vector3(speed * Input.GetAxis("Horizontal"), body.velocity.y, 0);
-        offsetTransform.position = new Vector3(transform.position.x + (attackObject[selected].transform.localScale.x) * direction, transform.position.y, transform.position.z);
-        attackObject[selected].transform.position = offsetTransform.position;
-
+        hSpeed = speed * Input.GetAxis("Horizontal");
+        CheckGrounded();
         if (isGrounded)
+            print("idk");
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Jump();
-                isGrounded = false;
-            }
+            Jump();
         }
-
-        if (Input.GetMouseButtonDown(0) && !isAttacking)
-        {
-            Attack();
-            isAttacking = false;
-        }
-    }
-
-    private void Attack()
-    {
-        attackObject[selected].SetActive(true);
-        attackAnim[selected].SetTrigger("Attack");
+        body.velocity = new Vector3(hSpeed, body.velocity.y, 0.0f);
     }
 
     private void Jump()
     {
-        body.velocity = new Vector3(body.velocity.x * 0.6f, jumpHeight, body.velocity.x);
+        body.velocity = new Vector3(body.velocity.x, jumpHeight, 0.0f);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void CheckGrounded()
     {
-        if (collision.gameObject.tag == "Ground")
+        Vector3 boxPosition = transform.position; // Box position
+        Vector3 boxHalfSize = boxCollider.bounds.size * 0.5f; // Half size of the box
+        Quaternion boxRotation = transform.rotation; // Box rotation
+        Vector3 castDirection = -transform.up; // Cast direction
+        RaycastHit hitResult; // Stores the result
+        // Call BoxCast
+        if (Physics.BoxCast(boxPosition, boxHalfSize, castDirection, out hitResult, boxRotation, 0.1f))
         {
-            isGrounded = true;
+            Debug.Log($"BoxCast hitted: {hitResult.collider.tag}, {isGrounded}");
+            if (hitResult.collider.tag == "Ground")
+                isGrounded = true;
+            else
+                isGrounded = false;
         }
+        else
+            isGrounded = false;
     }
 }
