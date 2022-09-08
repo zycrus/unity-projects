@@ -48,8 +48,6 @@ public class PlayerControls : MonoBehaviour
     {
         if (Input.GetAxis("Horizontal") != 0 && !isAttacking)
         {
-            hSpeed = Mathf.Lerp(hSpeed, maxSpeed * Input.GetAxisRaw("Horizontal"), Time.deltaTime * 5);
-
             if (Input.GetAxis("Horizontal") > 0)
             {
                 direction = 1;
@@ -59,16 +57,8 @@ public class PlayerControls : MonoBehaviour
                 direction = -1;
             }
             rockOffset.localPosition = new Vector3(direction * rockOffsetDistance, 0, 0);
-            print(rockOffset.localPosition);
         }
-        else
-        {
-            hSpeed = Mathf.Lerp(hSpeed, 0, Time.deltaTime * 5);
-            if (Mathf.Abs(hSpeed) < 0.1f)
-            {
-                hSpeed = 0;
-            }
-        }
+        hSpeed = maxSpeed * Input.GetAxisRaw("Horizontal");
 
         Jump();
     }
