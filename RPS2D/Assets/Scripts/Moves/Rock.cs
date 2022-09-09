@@ -46,6 +46,16 @@ public class Rock : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(this.gameObject);
+        if (collision.tag == "Paper")
+        {
+            Destroy(this.gameObject);
+        }
+        if (collision.tag == "Dummy")
+        {
+            DummyActions dummyAction;
+            dummyAction = collision.GetComponent<DummyActions>();
+            dummyAction.Hurt(0.1f, player.direction);
+            Destroy(this.gameObject);
+        }
     }
 }
