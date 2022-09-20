@@ -25,6 +25,13 @@ public class PlayerControls : MonoBehaviour
     [SerializeField] private GameObject rockPrefab;
     [SerializeField] private Transform rockOffset;
     [SerializeField] private float rockOffsetDistance = 1f;
+    [SerializeField] private GameObject paperPrefab;
+    [SerializeField] private Transform paperOffset;
+    [SerializeField] private float paperOffsetDistance = 0.5f;
+    [SerializeField] private GameObject scissorsPrefab;
+    [SerializeField] private Scissors scissorsScripts;
+    [SerializeField] private Transform scissorsOffset;
+    [SerializeField] private float scissorsOffsetDistance = 0.3f;
     [SerializeField] private bool isAttacking = false;
     [SerializeField] public float recoverTimer = 0f;
 
@@ -46,8 +53,9 @@ public class PlayerControls : MonoBehaviour
 
     private void Move()
     {
-        if (Input.GetAxis("Horizontal") != 0 && !isAttacking)
+        if (!isAttacking)
         {
+<<<<<<< HEAD
             if (Input.GetAxis("Horizontal") > 0)
             {
                 direction = 1;
@@ -61,6 +69,31 @@ public class PlayerControls : MonoBehaviour
         hSpeed = maxSpeed * Input.GetAxisRaw("Horizontal");
 
         Jump();
+=======
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                if (Input.GetAxis("Horizontal") > 0)
+                {
+                    direction = 1;
+                }
+                if (Input.GetAxis("Horizontal") < 0)
+                {
+                    direction = -1;
+                }
+                rockOffset.localPosition = new Vector3(direction * rockOffsetDistance, 0, 0);
+                paperOffset.localPosition = new Vector3(direction * paperOffsetDistance, 0, 0);
+                scissorsOffset.localPosition = new Vector3(direction * scissorsOffsetDistance, 0, 0);
+
+                hSpeed = maxSpeed * Input.GetAxisRaw("Horizontal");
+            }
+
+            Jump();
+        }
+        else if (isAttacking)
+        {
+            hSpeed = 0;
+        }
+>>>>>>> 6ab8bb0bcda0d7a600529e178ea6cac2df17528b
     }
 
     private void Jump()
@@ -98,16 +131,34 @@ public class PlayerControls : MonoBehaviour
         {
             Instantiate(rockPrefab, rockOffset);
         }
-
-        if (recoverTimer > 0)
+        if (Input.GetKeyDown(KeyCode.E) && !isAttacking)
         {
-            isAttacking = true;
-            recoverTimer -= Time.deltaTime;
+            Instantiate(scissorsPrefab, scissorsOffset);
+            scissorsScripts = GetComponentInChildren<Scissors>();
+            scissorsScripts.Meelee();
+        }
+        if (Input.GetMouseButton(1))
+        {
+            if (!isAttacking)
+            {
+                paperOffset.gameObject.SetActive(true);
+                isAttacking = true;
+            }
         }
         else
         {
-            isAttacking = false;
-            recoverTimer = 0;
+            paperOffset.gameObject.SetActive(false);
+
+            if (recoverTimer > 0)
+            {
+                isAttacking = true;
+                recoverTimer -= Time.deltaTime;
+            }
+            else
+            {
+                isAttacking = false;
+                recoverTimer = 0;
+            }
         }
     }
 }

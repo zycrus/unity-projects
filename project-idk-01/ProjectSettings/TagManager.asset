@@ -4,8 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Paper
-  - Dummy
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -13,7 +12,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Ground
+  - 
   - 
   - 
   - 
