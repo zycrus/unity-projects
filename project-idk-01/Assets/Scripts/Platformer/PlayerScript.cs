@@ -69,6 +69,7 @@ public class PlayerScript : MonoBehaviour
             if(!isShooting) Shoot();
         }
         animator.SetBool("Charge", isCharging);
+        if (!isShooting) lineRenderer.enabled = false;
     }
 
     private void FixedUpdate()
